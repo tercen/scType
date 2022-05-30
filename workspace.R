@@ -10,8 +10,8 @@ source("https://raw.githubusercontent.com/IanevskiAleksandr/sc-type/master/R/sct
 #source("https://raw.githubusercontent.com/IanevskiAleksandr/sc-type/master/R/auto_detect_tissue_type.R")
 
 options("tercen.workflowId" = "bb1b63cf1a12a9aabb0ce7b33d018aee")
-#options("tercen.stepId"     = "bdf24f26-8dd1-4cca-ab9c-80a09c2a6a64")
-options("tercen.stepId"     = "eb27b255-8edc-4597-ad32-8154aa690062")
+options("tercen.stepId"     = "bdf24f26-8dd1-4cca-ab9c-80a09c2a6a64")
+#options("tercen.stepId"     = "eb27b255-8edc-4597-ad32-8154aa690062")
 
 getOption("tercen.workflowId")
 getOption("tercen.stepId")
@@ -28,8 +28,8 @@ scRNAseqData<-as.matrix(ctx)
 #rownames(scRNAseqData)<-.ri 
 #colnames(scRNAseqData)<-.ci
 rownames(scRNAseqData)<-as.matrix(rselect(ctx))
-#colnames(scRNAseqData)<-as.matrix(cselect(ctx))
-colnames(scRNAseqData)<-as.matrix(ctx%>% select(.ci)%>%unique(.))
+colnames(scRNAseqData)<-as.matrix(cselect(ctx))
+#colnames(scRNAseqData)<-as.matrix(ctx%>% select(.ci)%>%unique(.))
 
 #scRNAseqData <- read.csv("./pbmc3k.csv",row.names = 1)
 # prepare gene sets
@@ -38,6 +38,7 @@ gs_list <- gene_sets_prepare(db_, tissue)
 es.max <- sctype_score(scRNAseqData = scRNAseqData, scaled = TRUE, gs = gs_list$gs_positive, gs2 = gs_list$gs_negative)
 
 es.max.long <- melt(es.max)
+colnames(es.max.long)<-c("type","SEQ","sctype_score")
 df_test<-data.frame(.ci = seq(from=0,to=length(rownames(es.max.long))-1), f=es.max.long) 
 df_test %>%
   ctx$addNamespace() %>%

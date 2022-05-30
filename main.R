@@ -31,8 +31,10 @@ gs_list <- gene_sets_prepare(db_, tissue)
 es.max <- sctype_score(scRNAseqData = scRNAseqData, scaled = TRUE, gs = gs_list$gs_positive, gs2 = gs_list$gs_negative)
 
 es.max.long <- melt(es.max)
+colnames(es.max.long)<-c("type","SEQ","sctype_score")
 df_test<-data.frame(.ci = seq(from=0,to=length(rownames(es.max.long))-1), f=es.max.long) 
 df_test %>%
   ctx$addNamespace() %>%
   ctx$save()
+
 
