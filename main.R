@@ -4,13 +4,14 @@ library(tidyr)
 library(reshape)
 library(Seurat)
 library(HGNChelper)
+library(openxlsx)
 source("https://raw.githubusercontent.com/IanevskiAleksandr/sc-type/master/R/gene_sets_prepare.R")
 source("https://raw.githubusercontent.com/IanevskiAleksandr/sc-type/master/R/sctype_score_.R")
 # load auto-detection function
 #source("https://raw.githubusercontent.com/IanevskiAleksandr/sc-type/master/R/auto_detect_tissue_type.R")
 
 # load database
-db_ = "https://raw.githubusercontent.com/IanevskiAleksandr/sc-type/master/ScTypeDB_full.xlsx"
+db_ = "./ScTypeDB_full.xlsx"
 tissue = "Immune system" # e.g. Immune system, Liver, Pancreas, Kidney, Eye, Brain
 
 ctx <- tercenCtx()
@@ -34,3 +35,4 @@ df_test<-data.frame(.ci = seq(from=0,to=length(rownames(es.max.long))-1), f=es.m
 df_test %>%
   ctx$addNamespace() %>%
   ctx$save()
+
