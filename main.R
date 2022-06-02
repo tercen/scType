@@ -17,24 +17,38 @@ tissue = "Immune system" # e.g. Immune system, Liver, Pancreas, Kidney, Eye, Bra
 ctx <- tercenCtx()
 scRNAseqData<-as.matrix(ctx)
 
-#.ri <- seq(from = 0, to = length(as.matrix(rselect(ctx))) - 1)
-#.ci <- seq(from = 0, to = length(as.matrix(cselect(ctx))) - 1)
-#rownames(scRNAseqData)<-.ri 
-#colnames(scRNAseqData)<-.ci
+ctx %>% dplyr::select(.ci) 
+clusters<-as.matrix(unique(ctx$select(unlist(list(ctx$colors, '.ci')))))
+colnames(clusters)<-c(".cluster",".ci")
+
 rownames(scRNAseqData)<-as.matrix(rselect(ctx))
-colnames(scRNAseqData)<-as.matrix(cselect(ctx))
+colnames(scRNAseqData)<-as.matrix(ctx%>% select(.ci)%>%unique(.))
 
 #scRNAseqData <- read.csv("./pbmc3k.csv",row.names = 1)
 # prepare gene sets
-gs_list <- gene_sets_prepare(db_, tissue)
+gs_list <- suppressWarnings(suppressMessages(gene_sets_prepare(db_, tissue)))
 # assign cell types
 es.max <- sctype_score(scRNAseqData = scRNAseqData, scaled = TRUE, gs = gs_list$gs_positive, gs2 = gs_list$gs_negative)
 
-es.max.long <- melt(es.max)
-colnames(es.max.long)<-c("type","SEQ","sctype_score")
-df_test<-data.frame(.ci = seq(from=0,to=length(rownames(es.max.long))-1), f=es.max.long) 
-df_test %>%
-  ctx$addNamespace() %>%
-  ctx$save()
+# merge by cluster
+cL_resutls = do.call("rbind", lapply(unique(clusters[,".cluster"]), function(cl){
+  cl.tmp<-clusters[clusters[,1]==cl,]
+  es.max.cl = sort(rowSums(es.max[,colnames(es.max)==as.integer(cl.tmp[,2]), drop=FALSE]), decreasing = !0)
+  head(data.frame(.cluster = cl, type = names(es.max.cl), scores = es.max.cl, ncells = sum(clusters==cl)), 10)
+}))
 
+merge.cl_results<-merge(cL_resutls,clusters,all=TRUE) 
+sctype_scores = merge.cl_results %>% group_by(.cluster) %>% top_n(n = 1, wt = scores) 
+
+# set low-confident (low ScType score) clusters to "unknown"
+sctype_scores$type[as.numeric(as.character(sctype_scores$scores)) < sctype_scores$ncells/4] = "Unknown"
+
+sctype_scores<-sctype_scores%>%
+  mutate(.ci = as.integer(.ci))%>%
+  ctx$addNamespace()
+
+names(sctype_scores)[1]<-ctx$colors[[1]]
+
+sctype_scores%>%
+  ctx$save()
 
