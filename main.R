@@ -5,14 +5,15 @@ library(reshape)
 library(Seurat)
 library(HGNChelper)
 library(openxlsx)
-source("https://raw.githubusercontent.com/IanevskiAleksandr/sc-type/master/R/gene_sets_prepare.R")
-source("https://raw.githubusercontent.com/IanevskiAleksandr/sc-type/master/R/sctype_score_.R")
+#source("https://raw.githubusercontent.com/IanevskiAleksandr/sc-type/master/R/gene_sets_prepare.R")
+#source("https://raw.githubusercontent.com/IanevskiAleksandr/sc-type/master/R/sctype_score_.R")
+source("gene_sets_prepare.R")
+source("sctype_score_.R")
 # load auto-detection function
 #source("https://raw.githubusercontent.com/IanevskiAleksandr/sc-type/master/R/auto_detect_tissue_type.R")
 
 # load database
 db_ = "./ScTypeDB_full.xlsx"
-db_ = "https://raw.githubusercontent.com/IanevskiAleksandr/sc-type/master/ScTypeDB_full.xlsx"
 tissue = "Immune system" # e.g. Immune system, Liver, Pancreas, Kidney, Eye, Brain
 
 ctx <- tercenCtx()
