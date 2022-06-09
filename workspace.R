@@ -22,8 +22,6 @@ options("tercen.workflowId" = "9af47f50c3160717a5378977da00e254")
 options("tercen.stepId"     = "cc131013-caed-4fb2-a3c0-8392b16ee6ad")
 
 
-
-
 getOption("tercen.workflowId")
 getOption("tercen.stepId")
 
@@ -37,6 +35,8 @@ gene_sets_prepare_custom <- function(table_in, cell_type){
   cell_markers = cell_markers[cell_markers$tissueType == cell_type,] 
   cell_markers$geneSymbolmore1 = gsub(" ","",cell_markers$geneSymbolmore1); cell_markers$geneSymbolmore2 = gsub(" ","",cell_markers$geneSymbolmore2)
   
+  
+  
   # correct gene symbols from the given DB (up-genes)
   cell_markers$geneSymbolmore1 = sapply(1:nrow(cell_markers), function(i){
     
@@ -44,12 +44,14 @@ gene_sets_prepare_custom <- function(table_in, cell_type){
     markers_all = toupper(markers_all[markers_all != "NA" & markers_all != ""])
     markers_all = sort(markers_all)
     
+
     # if(length(markers_all) > 0){
     #   markers_all = unique(na.omit(checkGeneSymbols(markers_all)$Suggested.Symbol))
     #   paste0(markers_all, collapse=",")
     # } else {
     #   ""
     # }
+
   })
   
   # correct gene symbols from the given DB (down-genes)
@@ -59,12 +61,14 @@ gene_sets_prepare_custom <- function(table_in, cell_type){
     markers_all = toupper(markers_all[markers_all != "NA" & markers_all != ""])
     markers_all = sort(markers_all)
     
+
     # if(length(markers_all) > 0){
     #   markers_all = unique(na.omit(checkGeneSymbols(markers_all)$Suggested.Symbol))
     #   paste0(markers_all, collapse=",")
     # } else {
     #   ""
     # }
+
   })
   
   cell_markers$geneSymbolmore1 = gsub("///",",",cell_markers$geneSymbolmore1);cell_markers$geneSymbolmore1 = gsub(" ","",cell_markers$geneSymbolmore1)
@@ -135,6 +139,7 @@ sctype_score_custom <- function(scRNAseqData, scaled = !0, gs, gs2 = NULL, gene_
   
   es.max
 }
+
 #######
 
 ctx <- tercenCtx()
@@ -155,7 +160,6 @@ if(is.null(doc.id)){
   doc.id<-doc.id.tmp[[grep("documentId" , colnames(doc.id.tmp))]][1]
   table.pop<-ctx$client$tableSchemaService$select(doc.id)
   tbl_pop<-as_tibble(table.pop)
-  #tbl_pop<-as.list(tbl_pop)
 
   gs_list<-suppressWarnings(suppressMessages(gene_sets_prepare_custom(tbl_pop, tissue)))
 }
