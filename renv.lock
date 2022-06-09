@@ -967,18 +967,6 @@
       "Repository": "CRAN",
       "Hash": "17f6da8cfd7002760a859915ce7eef8f"
     },
-    "tim": {
-      "Package": "tim",
-      "Version": "0.0.4",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteRepo": "tim",
-      "RemoteUsername": "tercen",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "0ca5448945f1abae1df3e13a09c73ff352dd245b",
-      "Hash": "777d1251eb2858a7c034e7f05205e717"
-    },
     "utf8": {
       "Package": "utf8",
       "Version": "1.2.2",

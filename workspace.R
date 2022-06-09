@@ -13,18 +13,85 @@ source("sctype_score_.R")
 #source("https://raw.githubusercontent.com/IanevskiAleksandr/sc-type/master/R/auto_detect_tissue_type.R")
 
 options("tercen.workflowId" = "bb1b63cf1a12a9aabb0ce7b33d018aee")
-options("tercen.stepId"     = "bdf24f26-8dd1-4cca-ab9c-80a09c2a6a64")
-#options("tercen.stepId"     = "eb27b255-8edc-4597-ad32-8154aa690062")
+#options("tercen.stepId"     = "bdf24f26-8dd1-4cca-ab9c-80a09c2a6a64")
+options("tercen.stepId"     = "9224c792-7098-4b97-9ff7-0edadfaa1364")
 
 getOption("tercen.workflowId")
 getOption("tercen.stepId")
 
-# load database
-db_ = "./ScTypeDB_full.xlsx"
-db_ = "https://raw.githubusercontent.com/IanevskiAleksandr/sc-type/master/ScTypeDB_full.xlsx"
-tissue = "Immune system" # e.g. Immune system, Liver, Pancreas, Kidney, Eye, Brain
+### FUNCTION
+gene_sets_prepare_custom <- function(table_in, cell_type){
+  
+  cell_markers = table_in
+  cell_markers = cell_markers[cell_markers$tissueType == cell_type,] 
+  cell_markers$geneSymbolmore1 = gsub(" ","",cell_markers$geneSymbolmore1); cell_markers$geneSymbolmore2 = gsub(" ","",cell_markers$geneSymbolmore2)
+  
+  # correct gene symbols from the given DB (up-genes)
+  cell_markers$geneSymbolmore1 = sapply(1:nrow(cell_markers), function(i){
+    
+    markers_all = gsub(" ", "", unlist(strsplit(cell_markers$geneSymbolmore1[i],",")))
+    markers_all = toupper(markers_all[markers_all != "NA" & markers_all != ""])
+    markers_all = sort(markers_all)
+    
+    if(length(markers_all) > 0){
+      markers_all = unique(na.omit(checkGeneSymbols(markers_all)$Suggested.Symbol))
+      paste0(markers_all, collapse=",")
+    } else {
+      ""
+    }
+  })
+  
+  # correct gene symbols from the given DB (down-genes)
+  cell_markers$geneSymbolmore2 = sapply(1:nrow(cell_markers), function(i){
+    
+    markers_all = gsub(" ", "", unlist(strsplit(cell_markers$geneSymbolmore2[i],",")))
+    markers_all = toupper(markers_all[markers_all != "NA" & markers_all != ""])
+    markers_all = sort(markers_all)
+    
+    if(length(markers_all) > 0){
+      markers_all = unique(na.omit(checkGeneSymbols(markers_all)$Suggested.Symbol))
+      paste0(markers_all, collapse=",")
+    } else {
+      ""
+    }
+  })
+  
+  cell_markers$geneSymbolmore1 = gsub("///",",",cell_markers$geneSymbolmore1);cell_markers$geneSymbolmore1 = gsub(" ","",cell_markers$geneSymbolmore1)
+  cell_markers$geneSymbolmore2 = gsub("///",",",cell_markers$geneSymbolmore2);cell_markers$geneSymbolmore2 = gsub(" ","",cell_markers$geneSymbolmore2)
+  
+  gs = lapply(1:nrow(cell_markers), function(j) gsub(" ","",unlist(strsplit(toString(cell_markers$geneSymbolmore1[j]),",")))); names(gs) = cell_markers$cellName
+  gs2 = lapply(1:nrow(cell_markers), function(j) gsub(" ","",unlist(strsplit(toString(cell_markers$geneSymbolmore2[j]),",")))); names(gs2) = cell_markers$cellName
+  
+  list(gs_positive = gs, gs_negative = gs2)
+}
+
+#######
 
 ctx <- tercenCtx()
+
+### load database
+doc.id.tmp<-as_tibble(ctx$select())
+doc.id<-doc.id.tmp[[grep("documentId" , colnames(doc.id.tmp))]][1]
+
+# prepare gene sets
+tissue = "Immune system" # e.g. Immune system, Liver, Pancreas, Kidney, Eye, Brain
+
+if(is.null(doc.id)){
+  db_ = "./ScTypeDB_full.xlsx"
+  #db_ = "https://raw.githubusercontent.com/IanevskiAleksandr/sc-type/master/ScTypeDB_full.xlsx"
+  gs_list <- suppressWarnings(suppressMessages(gene_sets_prepare(db_, tissue)))
+}else{
+  #doc = ctx$client$fileService$get(doc.id)
+  doc.id<-doc.id.tmp[[grep("documentId" , colnames(doc.id.tmp))]][1]
+  table.pop<-ctx$client$tableSchemaService$select(doc.id)
+  tbl_pop<-as_tibble(table.pop)
+
+  gs_list<-suppressWarnings(suppressMessages(gene_sets_prepare_custom(tbl_pop, tissue)))
+}
+
+
+#split(x = testse, f = testse$columns[[1]])
+
 scRNAseqData<-as.matrix(ctx)
 
 ctx %>% dplyr::select(.ci) 
@@ -39,8 +106,7 @@ rownames(scRNAseqData)<-as.matrix(rselect(ctx))
 colnames(scRNAseqData)<-as.matrix(ctx%>% select(.ci)%>%unique(.))
 
 #scRNAseqData <- read.csv("./pbmc3k.csv",row.names = 1)
-# prepare gene sets
-gs_list <- suppressWarnings(suppressMessages(gene_sets_prepare(db_, tissue)))
+
 # assign cell types
 es.max <- sctype_score(scRNAseqData = scRNAseqData, scaled = TRUE, gs = gs_list$gs_positive, gs2 = gs_list$gs_negative)
 
