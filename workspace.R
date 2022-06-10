@@ -27,8 +27,9 @@ getOption("tercen.stepId")
 
 ### FUNCTION
 
-table_in<-tbl_pop
-cell_type<-tissue
+#table_in<-tbl_pop
+#cell_type<-tissue
+#check<-FALSE
 gene_sets_prepare_custom <- function(table_in, cell_type, check){
   
   cell_markers = table_in
@@ -45,12 +46,12 @@ gene_sets_prepare_custom <- function(table_in, cell_type, check){
     markers_all = sort(markers_all)
     
 
-     if(length(markers_all) > 0 & check){
-       markers_all = unique(na.omit(checkGeneSymbols(markers_all)$Suggested.Symbol))
-       paste0(markers_all, collapse=",")
-     } else {
-       ""
-     }
+      if((length(markers_all) > 0 ) && (check)){
+        markers_all = unique(na.omit(checkGeneSymbols(markers_all)$Suggested.Symbol))
+        paste0(markers_all, collapse=",")
+      } else {
+        markers_all
+      }
 
   })
   
@@ -62,12 +63,12 @@ gene_sets_prepare_custom <- function(table_in, cell_type, check){
     markers_all = sort(markers_all)
     
 
-     if(length(markers_all) > 0 & check){
-       markers_all = unique(na.omit(checkGeneSymbols(markers_all)$Suggested.Symbol))
-       paste0(markers_all, collapse=",")
-     } else {
-       ""
-     }
+    if((length(markers_all) > 0 ) && (check)){
+      markers_all = unique(na.omit(checkGeneSymbols(markers_all)$Suggested.Symbol))
+      paste0(markers_all, collapse=",")
+    } else {
+      markers_all
+    }
 
   })
   
@@ -145,6 +146,7 @@ sctype_score_custom <- function(scRNAseqData, scaled = !0, gs, gs2 = NULL, gene_
 ctx <- tercenCtx()
 
 rna.check <- as.logical(ctx$op.value('RNA_check_name'))
+rna.check <- FALSE
 ### load database
 doc.id.tmp<-as_tibble(ctx$select())
 doc.id<-doc.id.tmp[[grep("documentId" , colnames(doc.id.tmp))]][1]

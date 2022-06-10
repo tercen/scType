@@ -23,11 +23,11 @@ gene_sets_prepare_custom <- function(table_in, cell_type,check){
     markers_all = sort(markers_all)
     
     
-    if(length(markers_all) > 0 & check){
+    if((length(markers_all) > 0 ) && (check)){
       markers_all = unique(na.omit(checkGeneSymbols(markers_all)$Suggested.Symbol))
       paste0(markers_all, collapse=",")
     } else {
-      ""
+      markers_all
     }
     
   })
@@ -40,11 +40,11 @@ gene_sets_prepare_custom <- function(table_in, cell_type,check){
     markers_all = sort(markers_all)
     
     
-    if(length(markers_all) > 0 & check){
+    if((length(markers_all) > 0 ) && (check)){
       markers_all = unique(na.omit(checkGeneSymbols(markers_all)$Suggested.Symbol))
       paste0(markers_all, collapse=",")
     } else {
-      ""
+      markers_all
     }
     
   })
