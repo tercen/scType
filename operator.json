@@ -4,7 +4,14 @@
   "tags": ["basic statistics"],
   "authors": ["tercen"],
   "urls": ["https://github.com/tercen/sctype_operator"],
-  "properties": []
+  "properties": [
+   {
+    "kind": "BooleanProperty",
+    "name": "RNA_check_name",
+    "defaultValue": "false",
+    "description": "Check the genes name for RNA seq data"
+  }
+  ]
 }
 
 

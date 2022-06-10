@@ -7,7 +7,7 @@ library(HGNChelper)
 library(openxlsx)
 ### FUNCTION
 
-gene_sets_prepare_custom <- function(table_in, cell_type){
+gene_sets_prepare_custom <- function(table_in, cell_type,check){
   
   cell_markers = table_in
   cell_markers = cell_markers[cell_markers$tissueType == cell_type,] 
@@ -23,12 +23,12 @@ gene_sets_prepare_custom <- function(table_in, cell_type){
     markers_all = sort(markers_all)
     
     
-    # if(length(markers_all) > 0){
-    #   markers_all = unique(na.omit(checkGeneSymbols(markers_all)$Suggested.Symbol))
-    #   paste0(markers_all, collapse=",")
-    # } else {
-    #   ""
-    # }
+    if(length(markers_all) > 0 & check){
+      markers_all = unique(na.omit(checkGeneSymbols(markers_all)$Suggested.Symbol))
+      paste0(markers_all, collapse=",")
+    } else {
+      ""
+    }
     
   })
   
@@ -40,12 +40,12 @@ gene_sets_prepare_custom <- function(table_in, cell_type){
     markers_all = sort(markers_all)
     
     
-    # if(length(markers_all) > 0){
-    #   markers_all = unique(na.omit(checkGeneSymbols(markers_all)$Suggested.Symbol))
-    #   paste0(markers_all, collapse=",")
-    # } else {
-    #   ""
-    # }
+    if(length(markers_all) > 0 & check){
+      markers_all = unique(na.omit(checkGeneSymbols(markers_all)$Suggested.Symbol))
+      paste0(markers_all, collapse=",")
+    } else {
+      ""
+    }
     
   })
   
@@ -122,6 +122,7 @@ sctype_score_custom <- function(scRNAseqData, scaled = !0, gs, gs2 = NULL, gene_
 
 ctx <- tercenCtx()
 
+rna.check <- as.logical(ctx$op.value('RNA_check_name'))
 ### load database
 doc.id.tmp<-as_tibble(ctx$select())
 doc.id<-doc.id.tmp[[grep("documentId" , colnames(doc.id.tmp))]][1]
@@ -131,14 +132,14 @@ tissue = "Immune system" # e.g. Immune system, Liver, Pancreas, Kidney, Eye, Bra
 
 if(is.null(doc.id)){
   db_ = "./ScTypeDB_full.xlsx"
-  gs_list <- suppressWarnings(suppressMessages(gene_sets_prepare(db_, tissue)))
+  gs_list <- suppressWarnings(suppressMessages(gene_sets_prepare(db_, tissue, TRUE)))
 }else{
   #doc = ctx$client$fileService$get(doc.id)
   doc.id<-doc.id.tmp[[grep("documentId" , colnames(doc.id.tmp))]][1]
   table.pop<-ctx$client$tableSchemaService$select(doc.id)
   tbl_pop<-as_tibble(table.pop)
   
-  gs_list<-suppressWarnings(suppressMessages(gene_sets_prepare_custom(tbl_pop, tissue)))
+  gs_list<-suppressWarnings(suppressMessages(gene_sets_prepare_custom(tbl_pop, tissue,rna.check)))
 }
 
 
