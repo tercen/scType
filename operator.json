@@ -8,7 +8,7 @@
    {
     "kind": "BooleanProperty",
     "name": "RNA_check_name",
-    "defaultValue": "false",
+    "defaultValue": false,
     "description": "Check the genes name for RNA seq data"
   }
   ]
