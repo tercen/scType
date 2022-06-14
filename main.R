@@ -5,6 +5,7 @@ library(reshape)
 library(Seurat)
 library(HGNChelper)
 library(openxlsx)
+source("gene_sets_prepare.R")
 ### FUNCTION
 
 gene_sets_prepare_custom <- function(table_in, cell_type,check){
@@ -129,6 +130,7 @@ ConfThres<- as.integer(ctx$op.value('confidence threshold'))
 
 ### load database
 doc.id.tmp<-as_tibble(ctx$select())
+doc.id<-NULL
 doc.id<-doc.id.tmp[[grep("documentId" , colnames(doc.id.tmp))]][1]
 
 

@@ -5,7 +5,7 @@ library(reshape)
 library(Seurat)
 library(HGNChelper)
 library(openxlsx)
-#source("gene_sets_prepare.R")
+source("gene_sets_prepare.R")
 #source("sctype_score_.R")
 
 
@@ -151,6 +151,7 @@ ConfThres<- as.integer(ctx$op.value('confidence threshold'))
 
 ### load database
 doc.id.tmp<-as_tibble(ctx$select())
+doc.id<-NULL
 doc.id<-doc.id.tmp[[grep("documentId" , colnames(doc.id.tmp))]][1]
 
 # prepare gene sets
