@@ -156,6 +156,7 @@ if("documentId" %in% colnames(doc.id.tmp)){
 } else{
   doc.id<-NULL
 }
+
 # prepare gene sets
 tissue = "Immune system" # e.g. Immune system, Liver, Pancreas, Kidney, Eye, Brain
 rna.check <- FALSE
