@@ -136,7 +136,6 @@ if(is.null(doc.id)){
   db_ = "./ScTypeDB_full.xlsx"
   gs_list <- suppressWarnings(suppressMessages(gene_sets_prepare(db_, tissue, TRUE)))
 }else{
-  #doc = ctx$client$fileService$get(doc.id)
   doc.id<-doc.id.tmp[[grep("documentId" , colnames(doc.id.tmp))]][1]
   table.pop<-ctx$client$tableSchemaService$select(doc.id)
   tbl_pop<-as_tibble(table.pop)
@@ -152,13 +151,8 @@ clusters<-as.data.frame(unique(ctx$select(unlist(list(ctx$colors, '.ci')))))
 colnames(clusters)<-c(".cluster",".ci")
 clusters[,".ci"]<-as.integer(clusters[,".ci"])
 
-#rownames(scRNAseqData)<-.ri 
-#colnames(scRNAseqData)<-.ci
 rownames(scRNAseqData)<-as.matrix(rselect(ctx))
-#colnames(scRNAseqData)<-as.matrix(cselect(ctx))
 colnames(scRNAseqData)<-as.matrix(ctx%>% select(.ci)%>%unique(.))
-
-#scRNAseqData <- read.csv("./pbmc3k.csv",row.names = 1)
 
 # assign cell types
 es.max <- sctype_score_custom(scRNAseqData = scRNAseqData, scaled = TRUE, gs = gs_list$gs_positive, gs2 = gs_list$gs_negative)
@@ -173,38 +167,21 @@ cL_resutls = do.call("rbind", lapply(unique(clusters[,".cluster"]), function(cl)
 merge.cl_results<-merge(cL_resutls,clusters,all=TRUE)
 colnames(es.max)<-seq(from=0,to=length(colnames(es.max))-1)
 es.max.long <- melt(es.max)
-#df_test<-data.frame(.ci = seq(from=0,to=length(rownames(es.max.long))-1), f=es.max.long) 
 colnames(es.max.long)<-c("population",".ci","solo_score")
 merge.tmp<-merge(es.max.long,clusters,all=TRUE)
 merge.solo.cl_results<-merge(merge.tmp,merge.cl_results, by = c(".ci",".cluster","population"),all=TRUE)
-
-#merge.cl_results[(merge.cl_results[,".ci"]==0),]
-#merge.solo.cl_results[(merge.solo.cl_results[,".ci"]==0),]
-#sctype_scores = cL_resutls %>% group_by(cluster) %>% top_n(n = 1, wt = scores)  
 sctype_scores = merge.solo.cl_results %>% group_by(.cluster) %>% top_n(n = 1, wt = scores) 
 
 # set low-confident (low ScType score) clusters to "unknown"
 sctype_scores$population <- as.character(sctype_scores$population)
 sctype_scores$population[as.numeric(as.character(sctype_scores$scores)) < sctype_scores$ncells/ConfThres]<- "Unknown"
 sctype_scores$population <- as.factor(sctype_scores$population)
-#print(sctype_scores[,1:3])
 
 
-#df_test<-data.frame(.ci = seq(from=0,to=length(rownames(es.max.long))-1), f=es.max.long) 
-
-#df_test %>%
-
-#sctype_scores<-sctype_scores %>% 
-#  select(everything()) %>% 
-#  mutate(across(.ci, as.integer))
-#names(sctype_scores)[1]<-ctx$colors[[1]]
 
 sctype_scores<-sctype_scores%>%
   mutate(.ci = as.integer(.ci))%>%
   ctx$addNamespace()
-
-#names(sctype_scores)[1]<-ctx$colors[[1]]
-
 
 sctype_scores%>%
   ctx$save()
