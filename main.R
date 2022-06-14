@@ -122,13 +122,15 @@ sctype_score_custom <- function(scRNAseqData, scaled = !0, gs, gs2 = NULL, gene_
 
 ctx <- tercenCtx()
 
+# prepare gene sets
 rna.check <- as.logical(ctx$op.value('RNA_check_name'))
+tissue <- as.logical(ctx$op.value('tissue'))
+ConfThres<- as.integer(ctx$op.value('confidence threshold'))
+
 ### load database
 doc.id.tmp<-as_tibble(ctx$select())
 doc.id<-doc.id.tmp[[grep("documentId" , colnames(doc.id.tmp))]][1]
 
-# prepare gene sets
-tissue = "Immune system" # e.g. Immune system, Liver, Pancreas, Kidney, Eye, Brain
 
 if(is.null(doc.id)){
   db_ = "./ScTypeDB_full.xlsx"
@@ -183,7 +185,7 @@ sctype_scores = merge.solo.cl_results %>% group_by(.cluster) %>% top_n(n = 1, wt
 
 # set low-confident (low ScType score) clusters to "unknown"
 sctype_scores$population <- as.character(sctype_scores$population)
-sctype_scores$population[as.numeric(as.character(sctype_scores$scores)) < sctype_scores$ncells/4]<- "Unknown"
+sctype_scores$population[as.numeric(as.character(sctype_scores$scores)) < sctype_scores$ncells/ConfThres]<- "Unknown"
 sctype_scores$population <- as.factor(sctype_scores$population)
 #print(sctype_scores[,1:3])
 

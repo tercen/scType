@@ -10,6 +10,18 @@
     "name": "RNA_check_name",
     "defaultValue": false,
     "description": "Check the genes name for RNA seq data"
+  },
+  {
+    "kind": "StringProperty",
+    "name": "tissue",
+    "defaultValue": "Immune system",
+    "description": "Select the tissue: Immune system(default), Liver, Pancreas, Kidney, Eye, Brain or other"
+  },
+  {
+    "kind": "DoubleProperty",
+    "name": "confidence threshold",
+    "defaultValue": 4,
+    "description": "Select the confidence threshold to be used"
   }
   ]
 }
