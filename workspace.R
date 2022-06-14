@@ -5,7 +5,7 @@ library(reshape)
 library(Seurat)
 library(HGNChelper)
 library(openxlsx)
-#source("gene_sets_prepare.R")
+source("gene_sets_prepare.R")
 #source("sctype_score_.R")
 
 
@@ -151,8 +151,11 @@ ConfThres<- as.integer(ctx$op.value('confidence threshold'))
 
 ### load database
 doc.id.tmp<-as_tibble(ctx$select())
-doc.id<-doc.id.tmp[[grep("documentId" , colnames(doc.id.tmp))]][1]
-
+if("documentId" %in% colnames(doc.id.tmp)){
+  doc.id<-doc.id.tmp[[grep("documentId" , colnames(doc.id.tmp))]][1]
+} else{
+  doc.id<-NULL
+}
 # prepare gene sets
 tissue = "Immune system" # e.g. Immune system, Liver, Pancreas, Kidney, Eye, Brain
 rna.check <- FALSE
