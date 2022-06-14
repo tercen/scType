@@ -139,7 +139,7 @@ if("documentId" %in% colnames(doc.id.tmp)){
 
 if(is.null(doc.id)){
   db_ = "./ScTypeDB_full.xlsx"
-  gs_list <- suppressWarnings(suppressMessages(gene_sets_prepare(db_, tissue, TRUE)))
+  gs_list <- suppressWarnings(suppressMessages(gene_sets_prepare(db_, tissue)))
 }else{
   doc.id<-doc.id.tmp[[grep("documentId" , colnames(doc.id.tmp))]][1]
   table.pop<-ctx$client$tableSchemaService$select(doc.id)

@@ -165,7 +165,7 @@ ConfThres<-4
 if(is.null(doc.id)){
   db_ = "./ScTypeDB_full.xlsx"
   #db_ = "https://raw.githubusercontent.com/IanevskiAleksandr/sc-type/master/ScTypeDB_full.xlsx"
-  gs_list <- suppressWarnings(suppressMessages(gene_sets_prepare(db_, tissue, TRUE)))
+  gs_list <- suppressWarnings(suppressMessages(gene_sets_prepare(db_, tissue)))
 }else{
   #doc = ctx$client$fileService$get(doc.id)
   doc.id<-doc.id.tmp[[grep("documentId" , colnames(doc.id.tmp))]][1]
