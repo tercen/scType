@@ -19,7 +19,7 @@ options("tercen.workflowId" = "bb1b63cf1a12a9aabb0ce7b33d018aee")
 options("tercen.stepId"     = "9224c792-7098-4b97-9ff7-0edadfaa1364")
 
 options("tercen.workflowId" = "9af47f50c3160717a5378977da00e254")
-options("tercen.stepId"     = "cc131013-caed-4fb2-a3c0-8392b16ee6ad")
+options("tercen.stepId"     = "e3bf8a35-adb1-4c6e-a75a-453a5f5df30f")
 
 
 getOption("tercen.workflowId")
@@ -80,6 +80,11 @@ gene_sets_prepare_custom <- function(table_in, cell_type, check){
   
   list(gs_positive = gs, gs_negative = gs2)
 }
+
+
+
+#gs<-gs_list$gs_positive
+#gs2<-gs_list$gs_negative
 
 sctype_score_custom <- function(scRNAseqData, scaled = !0, gs, gs2 = NULL, gene_names_to_uppercase = !0, ...){
   
@@ -151,7 +156,7 @@ ConfThres<- as.integer(ctx$op.value('confidence threshold'))
 
 ### load database
 doc.id.tmp<-as_tibble(ctx$select())
-if("documentId" %in% colnames(doc.id.tmp)){
+if(length(grep("documentId", colnames(doc.id.tmp)))>0){
   doc.id<-doc.id.tmp[[grep("documentId" , colnames(doc.id.tmp))]][1]
 } else{
   doc.id<-NULL
@@ -200,25 +205,25 @@ es.max <- sctype_score_custom(scRNAseqData = scRNAseqData, scaled = TRUE, gs = g
 cL_resutls = do.call("rbind", lapply(unique(clusters[,"cluster"]), function(cl){
   cl.tmp<-clusters[clusters[,1]==cl,]
   es.max.cl = sort(rowSums(es.max[,colnames(es.max)==as.integer(cl.tmp[,2]), drop=FALSE]), decreasing = !0)
-  head(data.frame(cluster = cl, population = names(es.max.cl), scores = es.max.cl, ncells = sum(clusters==cl)), 10)
+  head(data.frame(cluster = cl, population = names(es.max.cl), cluster_scores = es.max.cl, ncells = sum(clusters==cl)), 10)
 }))
 
 merge.cl_results<-merge(cL_resutls,clusters,all=TRUE)
 colnames(es.max)<-seq(from=0,to=length(colnames(es.max))-1)
 es.max.long <- melt(es.max)
 #df_test<-data.frame(.ci = seq(from=0,to=length(rownames(es.max.long))-1), f=es.max.long) 
-colnames(es.max.long)<-c("population",".ci","solo_score")
+colnames(es.max.long)<-c("population",".ci","observation_score")
 merge.tmp<-merge(es.max.long,clusters,all=TRUE)
 merge.solo.cl_results<-merge(merge.tmp,merge.cl_results, by = c(".ci","cluster","population"),all=TRUE)
 
 #merge.cl_results[(merge.cl_results[,".ci"]==0),]
 #merge.solo.cl_results[(merge.solo.cl_results[,".ci"]==0),]
 #sctype_scores = cL_resutls %>% group_by(cluster) %>% top_n(n = 1, wt = scores)  
-sctype_scores = merge.solo.cl_results %>% group_by(cluster) %>% top_n(n = 1, wt = scores) 
+sctype_scores = merge.solo.cl_results %>% group_by(cluster) %>% top_n(n = 1, wt = cluster_scores) 
 
 # set low-confident (low ScType score) clusters to "unknown"
 sctype_scores$population <- as.character(sctype_scores$population)
-sctype_scores$population[as.numeric(as.character(sctype_scores$scores)) < sctype_scores$ncells/ConfThres]<- "Unknown"
+sctype_scores$population[as.numeric(as.character(sctype_scores$cluster_scores)) < sctype_scores$ncells/ConfThres]<- "Unknown"
 sctype_scores$population <- as.factor(sctype_scores$population)
 #print(sctype_scores[,1:3])
 

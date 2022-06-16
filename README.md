@@ -23,7 +23,7 @@ Input parameters|.
 Output relations|.
 ---|---
 `Population`        | list of cellular population
-`solo score`        | return the score for each observation
+`observation score`        | return the score for each observation
 `cluster score`        | return the score for each of the cluster id
 `cluster`        | return the cluster id set as input in colors
 ##### Details

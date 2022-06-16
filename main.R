@@ -130,7 +130,7 @@ ConfThres<- as.integer(ctx$op.value('confidence threshold'))
 
 ### load database
 doc.id.tmp<-as_tibble(ctx$select())
-if("documentId" %in% colnames(doc.id.tmp)){
+if(length(grep("documentId", colnames(doc.id.tmp)))>0){
   doc.id<-doc.id.tmp[[grep("documentId" , colnames(doc.id.tmp))]][1]
 } else{
   doc.id<-NULL
@@ -166,20 +166,20 @@ es.max <- sctype_score_custom(scRNAseqData = scRNAseqData, scaled = TRUE, gs = g
 cL_resutls = do.call("rbind", lapply(unique(clusters[,"cluster"]), function(cl){
   cl.tmp<-clusters[clusters[,1]==cl,]
   es.max.cl = sort(rowSums(es.max[,colnames(es.max)==as.integer(cl.tmp[,2]), drop=FALSE]), decreasing = !0)
-  head(data.frame(cluster = cl, population = names(es.max.cl), scores = es.max.cl, ncells = sum(clusters==cl)), 10)
+  head(data.frame(cluster = cl, population = names(es.max.cl), cluster_scores = es.max.cl, ncells = sum(clusters==cl)), 10)
 }))
 
 merge.cl_results<-merge(cL_resutls,clusters,all=TRUE)
 colnames(es.max)<-seq(from=0,to=length(colnames(es.max))-1)
 es.max.long <- melt(es.max)
-colnames(es.max.long)<-c("population",".ci","solo_score")
+colnames(es.max.long)<-c("population",".ci","observation_score")
 merge.tmp<-merge(es.max.long,clusters,all=TRUE)
 merge.solo.cl_results<-merge(merge.tmp,merge.cl_results, by = c(".ci","cluster","population"),all=TRUE)
-sctype_scores = merge.solo.cl_results %>% group_by(cluster) %>% top_n(n = 1, wt = scores) 
+sctype_scores = merge.solo.cl_results %>% group_by(cluster) %>% top_n(n = 1, wt = cluster_scores) 
 
 # set low-confident (low ScType score) clusters to "unknown"
 sctype_scores$population <- as.character(sctype_scores$population)
-sctype_scores$population[as.numeric(as.character(sctype_scores$scores)) < sctype_scores$ncells/ConfThres]<- "Unknown"
+sctype_scores$population[as.numeric(as.character(sctype_scores$cluster_scores)) < sctype_scores$ncells/ConfThres]<- "Unknown"
 sctype_scores$population <- as.factor(sctype_scores$population)
 
 
