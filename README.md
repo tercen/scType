@@ -40,7 +40,6 @@ with geneSymbolmore1 as positive markers and geneSymbolmore2 as markers not expe
 
 Low-confident scores (sctype cluster score less than the number of observation of this cluster divided by the confidence threshold) are set to "unknown".
 
-
 ##### See Also
 
 [Sctype git](https://github.com/IanevskiAleksandr/sc-type)
