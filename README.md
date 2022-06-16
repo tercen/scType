@@ -1,50 +1,36 @@
-# Template R operator
-
-The `Template R operator` is a template repository for the creation of R operators in Tercen. An overview of steps for developing an operator are:
-
-1. create a github repo
-2. install tercen_studio
-3. login to tercen_studio
-4. git clone the newly created repo
-5. start developing in R in tercen_studio
-6. add R packages to the repo
-7. push to the github repo
-8. go to tercen and install the operator
-
-More information can be found in [Tercen developer's guide](https://tercen.github.io/developers_guide/).
-
-Below is the operator README standard structure:
+# ScType operator
 
 ##### Description
 
-The `Template R operator` is a template repository for the creation of R operators in Tercen.
+The `ScType operator` : Fully-automated and ultra-fast cell-type identification using specific marker combinations from single-cell transcriptomic data.
 
 ##### Usage
 
 Input projection|.
 ---|---
-`x-axis`        | type, description 
-`y-axis`        | type, description 
-`row`           | type, description 
-`column`        | type, description 
-`colors`        | type, description 
-`labels`        | type, description 
+`y-axis`        | numeric, value (count or MFI)
+`row`           | type, genes or channels
+`column`        | type, row_Id 
+`colors`        | type, Cluster id 
+`labels`        | type, documentID of the file containing the cell_type-marker table.
 
 Input parameters|.
 ---|---
-`input_var`        | parameter description
+`RNA_check_name`        | Check the genes name for RNA seq data
+`tissue`        | Select the tissue: Immune system(default), Liver, Pancreas, Kidney, Eye, Brain or other
+`confidence threshold`        | Select the confidence threshold to be used
 
 Output relations|.
 ---|---
-`output_var`        | output relation
-`Operator view`        | view of the Shiny application
+`Population`        | output relation
+`solo score`        | view of the Shiny application
+`cluster score`        | view of the Shiny application
 
 ##### Details
 
-Details on the computation.
+ScType a computational method for automated selection of marker genes based merely on scRNA-seq data.
 
 ##### See Also
 
-[template_shiny_operator](https://github.com/tercen/template_shiny_operator)
-, [template_docker_operator](https://github.com/tercen/template_docker_operator)
+[Sctype git](https://github.com/IanevskiAleksandr/sc-type)
 
