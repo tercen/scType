@@ -11,7 +11,7 @@ Input projection|.
 `y-axis`        | numeric, value (count or MFI)
 `row`           | represents the variables (e.g. genes, channels, markers)
 `column`        | represents the observations (e.g. cells, samples, individuals)
-`colors`        | Cluster id 
+`colors`        | cluster id 
 `labels`        | documentID of the file containing the cell_type-marker table.
 
 Input parameters|.
