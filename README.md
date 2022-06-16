@@ -1,50 +1,47 @@
-# Template R operator
-
-The `Template R operator` is a template repository for the creation of R operators in Tercen. An overview of steps for developing an operator are:
-
-1. create a github repo
-2. install tercen_studio
-3. login to tercen_studio
-4. git clone the newly created repo
-5. start developing in R in tercen_studio
-6. add R packages to the repo
-7. push to the github repo
-8. go to tercen and install the operator
-
-More information can be found in [Tercen developer's guide](https://tercen.github.io/developers_guide/).
-
-Below is the operator README standard structure:
+# ScType operator
 
 ##### Description
 
-The `Template R operator` is a template repository for the creation of R operators in Tercen.
+The `ScType operator` : Fully-automated and ultra-fast cell-type identification using specific marker combinations from single-cell transcriptomic or flow cytometry data.
 
 ##### Usage
 
 Input projection|.
 ---|---
-`x-axis`        | type, description 
-`y-axis`        | type, description 
-`row`           | type, description 
-`column`        | type, description 
-`colors`        | type, description 
-`labels`        | type, description 
+`y-axis`        | numeric, value (count or MFI)
+`row`           | represents the variables (e.g. genes, channels, markers)
+`column`        | represents the observations (e.g. cells, samples, individuals)
+`colors`        | Cluster id 
+`labels`        | documentID of the file containing the cell_type-marker table.
 
 Input parameters|.
 ---|---
-`input_var`        | parameter description
+`RNA_check_name`        | boolean, check the genes name for RNA seq data 
+`tissue`        | character, select the tissue: Immune system(default), Liver, Pancreas, Kidney, Eye, Brain or other
+`confidence threshold`        | numeric, select the confidence threshold to be used
 
 Output relations|.
 ---|---
-`output_var`        | output relation
-`Operator view`        | view of the Shiny application
-
+`Population`        | list of cellular population
+`solo score`        | return the score for each observation
+`cluster score`        | return the score for each of the cluster id
+`cluster`        | return the cluster id set as input in colors
 ##### Details
 
-Details on the computation.
+ScType is a computational method for automated selection of marker based merely on scRNA-seq data.
+Custom database can be inputed (as labels), those manual DB file should contain four columns:
+
+| tissueType      | cellName | geneSymbolmore1   | geneSymbolmore2   |
+| :---        |    :----:   |    :----:   |          ---: | 
+| Immune system      | Naive B cells       | CD19,IgD,CD38,CD24,... |          |
+| Immune system   | Natural killer  cells        | CD56,CD2,CD16,CD94,...      |      CD3,CD4,CD8     |
+
+with geneSymbolmore1 as positive markers and geneSymbolmore2 as markers not expected to be expressed by a cell type.
+
+Low-confident scores (sctype cluster score less than the number of observation of this cluster divided by the confidence threshold) are set to "unknown".
+
 
 ##### See Also
 
-[template_shiny_operator](https://github.com/tercen/template_shiny_operator)
-, [template_docker_operator](https://github.com/tercen/template_docker_operator)
+[Sctype git](https://github.com/IanevskiAleksandr/sc-type)
 
